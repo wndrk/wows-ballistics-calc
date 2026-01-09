@@ -1,0 +1,14 @@
+{
+  "name": "wows-ballistics-calc",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "WoWS ballistics calculator using physics simulation",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "debug": "node --inspect src/index.js"
+  },
+  "dependencies": {
+    "puppeteer": "^23.0.0"
+  }
+}
