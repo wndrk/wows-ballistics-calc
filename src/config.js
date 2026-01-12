@@ -14,6 +14,7 @@ PHYSICS.gMRL = (PHYSICS.g * PHYSICS.M) / (PHYSICS.R * PHYSICS.L);
 export const MODIFIERS = {
   aftMultiplier: 1.2,       // AFT skill bonus for destroyers (+20%)
   spotterMultiplier: 1.2,   // Spotter plane bonus for BBs/CAs/CBs/CLs (+20%)
+  aprm1Multiplier: 1.16,    // Artillery Plotting Room Mod 1 for USN BBs (+16%)
   rangeBufferKm: 0.5,       // Buffer added to max range in XML output (km)
   uniqueUpgrades: {
     'Henri IV': 1.05,       // Unique upgrade: +5% max range
@@ -30,6 +31,10 @@ export const PITCH = {
   other: {  // HE/SAP
     DD: 0.03,
     default: 0.05  // Used for all non-DD including BB
+  },
+  // Ship-specific overrides: { shipName: { shellType: pitchValue } }
+  shipOverrides: {
+    'Cristoforo Colombo': { sap: 0.045 }
   }
 };
 
@@ -42,9 +47,12 @@ export const SHIP_NAME_MAPPINGS = {
   ],
   // Exact name replacements
   exact: {
+    'Alexander Nevsky': 'Pr_84_Alexander_Nevsky',
     'Yueyang': 'Hsiang_Yang',
     'Zao': 'Zao_1944',
     'Zorkiy': 'Zorky',
+    'Kremlin': 'Sovetskaya_Rossiya',
+    'Moskva': 'Pr_66_Moskva',
   },
 };
 

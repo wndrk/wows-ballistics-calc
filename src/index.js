@@ -36,11 +36,13 @@ async function main() {
         data.baseMaxRange,
         data.class,
         data.hasSpotter,
-        shipName
+        shipName,
+        data.nation
       );
 
       results[shipName] = {
         class: data.class,
+        nation: data.nation,
         baseMaxRange: data.baseMaxRange,
         modifiedRange,
         hasSpotter: data.hasSpotter,
@@ -118,7 +120,8 @@ async function main() {
     const { heConfigs: he, apConfigs: ap } = assignToFiles(
       normalizedName,
       shellResults,
-      shipResult.class
+      shipResult.class,
+      shipName
     );
 
     heConfigs.push(...he);

@@ -274,6 +274,7 @@ export async function scrapeShipData() {
         if (!shipData[info.originalName]) {
           shipData[info.originalName] = {
             class: info.class,
+            nation: row.nation || '',
             baseMaxRange: info.baseMaxRange,
             hasSpotter: spotterLookup[normalizedName] || false,
             shells: {}

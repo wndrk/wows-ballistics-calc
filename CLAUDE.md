@@ -66,7 +66,7 @@ timeMultiplier = 2.75  // WoWS game time scaling
 - `simulateTrajectory(angle, shellParams)` - Full trajectory simulation
 - `findLaunchAngle(targetRange, shellParams)` - Binary search for launch angle
 - `getBallisticsAtRange(rangeKm, shellParams)` - Main API: returns FT, IA, velocity
-- `calculateModifiedRange(base, class, spotter, name)` - Applies range modifiers
+- `calculateModifiedRange(base, class, spotter, name, nation)` - Applies range modifiers
 
 ### 3. Range Modifiers (src/config.js)
 
@@ -74,12 +74,19 @@ timeMultiplier = 2.75  // WoWS game time scaling
 MODIFIERS = {
   aftMultiplier: 1.2,      // All DDs get +20% (AFT skill)
   spotterMultiplier: 1.2,  // BB/CA/CB/CL with spotter get +20%
-  rangeBuffer: 1.05,       // Universal +5% buffer
+  aprm1Multiplier: 1.16,   // USN BBs get +16% (Artillery Plotting Room Mod 1)
+  rangeBufferKm: 0.5,      // Buffer added to max range in XML output (km)
   uniqueUpgrades: {
     'Henri IV': 1.05       // Ship-specific modifiers
   }
 }
 ```
+
+**Modifier application order:**
+1. APRM1 (+16%) for USN BBs (nation === 'U.S.A.')
+2. Spotter plane (+20%) for BBs/CAs/CBs/CLs with spotter
+3. AFT (+20%) for DDs
+4. Unique upgrades (ship-specific)
 
 ### 4. Factor Calculation (src/utils.js)
 
@@ -96,9 +103,10 @@ Each weapon has two FireMode blocks:
 2. **Max-range**: MinRange halfRange to maxRange + 0.5km buffer
 
 **Pitch values by shell type and class:**
-- AP: DD=0, BB=-0.019, default=-0.013
-- HE/SAP: DD=0.025, BB=0.040, default=0.045
+- AP: DD=0, BB=-0.014, default=-0.013
+- HE/SAP: DD=0.03, default=0.05
 - AP upper range always uses pitch=0
+- Ship-specific overrides supported (e.g., Cristoforo Colombo SAP=0.045)
 
 **File assignment:**
 - `HE.cfg`: HE → SAP fallback → AP fallback
@@ -108,7 +116,13 @@ Each weapon has two FireMode blocks:
 
 Transforms ship names for config output:
 - Suffix transforms: " B" → "Black_", " Golden" → "Gold_"
-- Exact replacements: Yueyang → Hsiang_Yang, Zao → Zao_1944
+- Exact replacements:
+  - Alexander Nevsky → Pr_84_Alexander_Nevsky
+  - Yueyang → Hsiang_Yang
+  - Zao → Zao_1944
+  - Zorkiy → Zorky
+  - Kremlin → Sovetskaya_Rossiya
+  - Moskva → Pr_66_Moskva
 - Diacritics removed, special chars replaced with underscores
 
 ## Output
@@ -137,6 +151,7 @@ Transforms ship names for config output:
 {
   "ShipName": {
     "class": "BB",
+    "nation": "USA",
     "baseMaxRange": 26.6,
     "modifiedRange": 27.93,
     "hasSpotter": false,

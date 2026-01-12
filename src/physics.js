@@ -100,7 +100,7 @@ export function simulateTrajectory(launchAngleDeg, shellParams) {
   const dt = 0.02; // time step (seconds)
   let time = 0;
 
-  while (state.y >= 0 && time < 60) {
+  while (state.y >= 0 && time < 120) {
     state = rk4Step(state, dt, k);
     time += dt;
   }
@@ -160,10 +160,16 @@ export function getBallisticsAtRange(targetRangeKm, shellParams) {
  * @param {string} shipClass - Ship class (BB, CA, CB, CL, DD, SS, CV)
  * @param {boolean} hasSpotter - Whether ship has spotter plane
  * @param {string} shipName - Ship name for unique upgrades
+ * @param {string} nation - Ship nation (e.g., 'USA', 'Japan', etc.)
  * @returns {number} Modified max range in km
  */
-export function calculateModifiedRange(baseMaxRange, shipClass, hasSpotter, shipName) {
+export function calculateModifiedRange(baseMaxRange, shipClass, hasSpotter, shipName, nation) {
   let maxRange = baseMaxRange;
+
+  // Apply Artillery Plotting Room Mod 1 for USN BBs (+16%)
+  if (nation === 'U.S.A.' && shipClass === 'BB') {
+    maxRange = baseMaxRange * MODIFIERS.aprm1Multiplier;
+  }
 
   // Apply class-specific modifiers
   if (shipClass === 'DD') {
@@ -171,7 +177,7 @@ export function calculateModifiedRange(baseMaxRange, shipClass, hasSpotter, ship
     maxRange = baseMaxRange * MODIFIERS.aftMultiplier;
   } else if (['BB', 'CA', 'CB', 'CL'].includes(shipClass) && hasSpotter) {
     // BBs/CAs/CBs/CLs with spotter plane (+20%)
-    maxRange = baseMaxRange * MODIFIERS.spotterMultiplier;
+    maxRange *= MODIFIERS.spotterMultiplier;
   }
 
   // Apply unique upgrade modifier if applicable

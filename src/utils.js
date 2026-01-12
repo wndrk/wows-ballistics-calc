@@ -68,12 +68,17 @@ export function calculateConvertedRange(rangeKm) {
  * @param {string} shellType - Shell type (ap, he, sap)
  * @param {Object} rangeData - Range data {halfRange, halfFactor, maxRange, maxFactor}
  * @param {string} shipClass - Ship class (BB, CA, CB, CL, DD)
+ * @param {string} originalShipName - Original ship name for override lookup
  * @returns {string} Weapon config XML
  */
-export function generateWeaponConfig(shipName, shellType, rangeData, shipClass) {
-  const pitch = (shellType === 'ap')
-    ? (PITCH.ap[shipClass] ?? PITCH.ap.default)
-    : (PITCH.other[shipClass] ?? PITCH.other.default);
+export function generateWeaponConfig(shipName, shellType, rangeData, shipClass, originalShipName) {
+  // Check for ship-specific override first
+  const shipOverride = PITCH.shipOverrides?.[originalShipName]?.[shellType];
+  const pitch = shipOverride !== undefined
+    ? shipOverride
+    : (shellType === 'ap')
+      ? (PITCH.ap[shipClass] ?? PITCH.ap.default)
+      : (PITCH.other[shipClass] ?? PITCH.other.default);
 
   const halfConv = calculateConvertedRange(rangeData.halfRange);
   const maxConv = calculateConvertedRange(rangeData.maxRange + 0.5); // 0.5km buffer
@@ -158,9 +163,10 @@ export function generateWeaponConfig(shipName, shellType, rangeData, shipClass) 
  * @param {string} shipName - Normalized ship name
  * @param {Object} shellResults - Shell results {he, ap, sap}
  * @param {string} shipClass - Ship class
+ * @param {string} originalShipName - Original ship name for override lookup
  * @returns {Object} {heConfigs, apConfigs} arrays
  */
-export function assignToFiles(shipName, shellResults, shipClass) {
+export function assignToFiles(shipName, shellResults, shipClass, originalShipName) {
   const hasHE = 'he' in shellResults;
   const hasAP = 'ap' in shellResults;
   const hasSAP = 'sap' in shellResults;
@@ -170,19 +176,19 @@ export function assignToFiles(shipName, shellResults, shipClass) {
 
   // HE.cfg: HE if available, else SAP, else AP as fallback
   if (hasHE) {
-    heConfigs.push(generateWeaponConfig(shipName, 'he', shellResults.he, shipClass));
+    heConfigs.push(generateWeaponConfig(shipName, 'he', shellResults.he, shipClass, originalShipName));
   } else if (hasSAP) {
-    heConfigs.push(generateWeaponConfig(shipName, 'sap', shellResults.sap, shipClass));
+    heConfigs.push(generateWeaponConfig(shipName, 'sap', shellResults.sap, shipClass, originalShipName));
   } else if (hasAP) {
-    heConfigs.push(generateWeaponConfig(shipName, 'ap', shellResults.ap, shipClass));
+    heConfigs.push(generateWeaponConfig(shipName, 'ap', shellResults.ap, shipClass, originalShipName));
   }
 
   // AP.cfg: AP always, SAP only if ship has HE
   if (hasAP) {
-    apConfigs.push(generateWeaponConfig(shipName, 'ap', shellResults.ap, shipClass));
+    apConfigs.push(generateWeaponConfig(shipName, 'ap', shellResults.ap, shipClass, originalShipName));
   }
   if (hasSAP && hasHE) {
-    apConfigs.push(generateWeaponConfig(shipName, 'sap', shellResults.sap, shipClass));
+    apConfigs.push(generateWeaponConfig(shipName, 'sap', shellResults.sap, shipClass, originalShipName));
   }
 
   return { heConfigs, apConfigs };
