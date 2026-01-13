@@ -2,6 +2,11 @@
 
 A Node.js tool that calculates World of Warships shell ballistics using physics simulation and generates weapon config files.
 
+## User Preferences
+
+- **Config target directory**: `C:\claude\Downloads\C4AEF469A35787C7CDEF95AB82972825\`
+  - After scraping, copy HE.cfg and AP.cfg to this directory
+
 ## Quick Start
 
 ```bash
@@ -104,7 +109,7 @@ Each weapon has two FireMode blocks:
 
 **Pitch values by shell type and class:**
 - AP: DD=0, BB=-0.014, default=-0.013
-- HE/SAP: DD=0.03, default=0.05
+- HE/SAP: DD=0.03, default=0.04
 - AP upper range always uses pitch=0
 - Ship-specific overrides supported (e.g., Cristoforo Colombo SAP=0.045)
 
@@ -116,9 +121,11 @@ Each weapon has two FireMode blocks:
 
 Transforms ship names for config output:
 - Suffix transforms: " B" → "Black_", " Golden" → "Gold_"
+- Prefix transforms: "AL_" → "Azur_" (Azur Lane collaboration ships)
 - Exact replacements:
   - Alexander Nevsky → Pr_84_Alexander_Nevsky
   - Yueyang → Hsiang_Yang
+  - Hsienyang → Hsien_Yang
   - Zao → Zao_1944
   - Zorkiy → Zorky
   - Kremlin → Sovetskaya_Rossiya

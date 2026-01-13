@@ -45,10 +45,15 @@ export const SHIP_NAME_MAPPINGS = {
     { suffix: ' B', prefix: 'Black_', trim: 2 },      // "Rhode Island B" -> "Black_Rhode_Island"
     { suffix: ' Golden', prefix: 'Gold_', trim: 7 },  // "Aki Golden" -> "Gold_Aki"
   ],
+  // Prefix transformations (applied after all other transforms): { from, to }
+  prefixes: [
+    { from: 'AL_', to: 'Azur_' },  // "AL Hindenburg" -> "Azur_Hindenburg"
+  ],
   // Exact name replacements
   exact: {
     'Alexander Nevsky': 'Pr_84_Alexander_Nevsky',
     'Yueyang': 'Hsiang_Yang',
+    'Hsienyang': 'Hsien_Yang',
     'Zao': 'Zao_1944',
     'Zorkiy': 'Zorky',
     'Kremlin': 'Sovetskaya_Rossiya',

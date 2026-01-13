@@ -31,6 +31,14 @@ export function normalizeShipName(name) {
     .replace(/-/g, '_')
     .replace(/\s+/g, '_');
 
+  // Apply prefix transformations (e.g., AL_ -> Azur_)
+  for (const { from, to } of SHIP_NAME_MAPPINGS.prefixes) {
+    if (weaponName.startsWith(from)) {
+      weaponName = to + weaponName.slice(from.length);
+      break;
+    }
+  }
+
   return weaponName;
 }
 
