@@ -219,7 +219,7 @@ export function assignToFiles(shipName, shellResults, shipClass, originalShipNam
  * @returns {string} Weapon config XML
  */
 export function generateSonarConfig(shipName, bulletSpeed, rangeKm) {
-  const maxConv = calculateConvertedRange(rangeKm);
+  const maxRange = calculateConvertedRange(20); // Fixed 20 km max range for sonar
 
   return `<Weapon ${shipName}>
 \t<FireMode>
@@ -235,7 +235,7 @@ export function generateSonarConfig(shipName, bulletSpeed, rangeKm) {
 \t\t\t\t<MinPlayerZoom -1></MinPlayerZoom>
 \t\t\t\t<MaxPlayerZoom -1></MaxPlayerZoom>
 \t\t\t\t<MinRange -1></MinRange>
-\t\t\t\t<MaxRange ${maxConv}></MaxRange>
+\t\t\t\t<MaxRange ${maxRange}></MaxRange>
 \t\t\t\t<MinAngle -1></MinAngle>
 \t\t\t\t<MaxAngle -1></MaxAngle>
 \t\t\t</HitData>
