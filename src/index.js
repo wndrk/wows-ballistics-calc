@@ -108,6 +108,9 @@ async function main() {
   const apConfigs = [];
 
   for (const [shipName, shipResult] of Object.entries(results)) {
+    // Skip submarines - they only get sonar configs, not shell configs
+    if (shipResult.class === 'SS') continue;
+
     const normalizedName = normalizeShipName(shipName);
 
     // Build shell results in the format expected by assignToFiles
