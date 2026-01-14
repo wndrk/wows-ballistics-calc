@@ -26,6 +26,8 @@ export const PITCH = {
   ap: {
     DD: 0,
     BB: -0.014,
+    CA: -0.014,       // Heavy cruiser (caliber >= 203mm)
+    CL: -0.011,       // Light cruiser (caliber < 203mm)
     default: -0.013
   },
   other: {  // HE/SAP

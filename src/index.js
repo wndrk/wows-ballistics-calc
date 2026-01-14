@@ -121,11 +121,15 @@ async function main() {
       };
     }
 
+    // Get caliber from any shell type (all same gun)
+    const caliber = Object.values(shipResult.shells)[0]?.shellProps?.caliber;
+
     const { heConfigs: he, apConfigs: ap } = assignToFiles(
       normalizedName,
       shellResults,
       shipResult.class,
-      shipName
+      shipName,
+      caliber
     );
 
     heConfigs.push(...he);

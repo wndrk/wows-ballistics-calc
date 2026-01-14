@@ -77,16 +77,23 @@ export function calculateConvertedRange(rangeKm) {
  * @param {Object} rangeData - Range data {halfRange, halfFactor, maxRange, maxFactor}
  * @param {string} shipClass - Ship class (BB, CA, CB, CL, DD)
  * @param {string} originalShipName - Original ship name for override lookup
+ * @param {number} caliber - Gun caliber in mm (used for CL/CA classification)
  * @returns {string} Weapon config XML
  */
-export function generateWeaponConfig(shipName, shellType, rangeData, shipClass, originalShipName) {
+export function generateWeaponConfig(shipName, shellType, rangeData, shipClass, originalShipName, caliber) {
+  // Determine effective class: cruisers classified by caliber
+  let effectiveClass = shipClass;
+  if (['CA', 'CL', 'CB'].includes(shipClass) && caliber) {
+    effectiveClass = caliber < 203 ? 'CL' : 'CA';
+  }
+
   // Check for ship-specific override first
   const shipOverride = PITCH.shipOverrides?.[originalShipName]?.[shellType];
   const pitch = shipOverride !== undefined
     ? shipOverride
     : (shellType === 'ap')
-      ? (PITCH.ap[shipClass] ?? PITCH.ap.default)
-      : (PITCH.other[shipClass] ?? PITCH.other.default);
+      ? (PITCH.ap[effectiveClass] ?? PITCH.ap.default)
+      : (PITCH.other[effectiveClass] ?? PITCH.other.default);
 
   const halfConv = calculateConvertedRange(rangeData.halfRange);
   const maxConv = calculateConvertedRange(rangeData.maxRange + 0.5); // 0.5km buffer
@@ -172,9 +179,10 @@ export function generateWeaponConfig(shipName, shellType, rangeData, shipClass, 
  * @param {Object} shellResults - Shell results {he, ap, sap}
  * @param {string} shipClass - Ship class
  * @param {string} originalShipName - Original ship name for override lookup
+ * @param {number} caliber - Gun caliber in mm (used for CL/CA classification)
  * @returns {Object} {heConfigs, apConfigs} arrays
  */
-export function assignToFiles(shipName, shellResults, shipClass, originalShipName) {
+export function assignToFiles(shipName, shellResults, shipClass, originalShipName, caliber) {
   const hasHE = 'he' in shellResults;
   const hasAP = 'ap' in shellResults;
   const hasSAP = 'sap' in shellResults;
@@ -184,19 +192,19 @@ export function assignToFiles(shipName, shellResults, shipClass, originalShipNam
 
   // HE.cfg: HE if available, else SAP, else AP as fallback
   if (hasHE) {
-    heConfigs.push(generateWeaponConfig(shipName, 'he', shellResults.he, shipClass, originalShipName));
+    heConfigs.push(generateWeaponConfig(shipName, 'he', shellResults.he, shipClass, originalShipName, caliber));
   } else if (hasSAP) {
-    heConfigs.push(generateWeaponConfig(shipName, 'sap', shellResults.sap, shipClass, originalShipName));
+    heConfigs.push(generateWeaponConfig(shipName, 'sap', shellResults.sap, shipClass, originalShipName, caliber));
   } else if (hasAP) {
-    heConfigs.push(generateWeaponConfig(shipName, 'ap', shellResults.ap, shipClass, originalShipName));
+    heConfigs.push(generateWeaponConfig(shipName, 'ap', shellResults.ap, shipClass, originalShipName, caliber));
   }
 
   // AP.cfg: AP always, SAP only if ship has HE
   if (hasAP) {
-    apConfigs.push(generateWeaponConfig(shipName, 'ap', shellResults.ap, shipClass, originalShipName));
+    apConfigs.push(generateWeaponConfig(shipName, 'ap', shellResults.ap, shipClass, originalShipName, caliber));
   }
   if (hasSAP && hasHE) {
-    apConfigs.push(generateWeaponConfig(shipName, 'sap', shellResults.sap, shipClass, originalShipName));
+    apConfigs.push(generateWeaponConfig(shipName, 'sap', shellResults.sap, shipClass, originalShipName, caliber));
   }
 
   return { heConfigs, apConfigs };
