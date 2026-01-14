@@ -1,4 +1,4 @@
-import { SHIP_NAME_MAPPINGS, PITCH } from './config.js';
+import { SHIP_NAME_MAPPINGS, PITCH, SONAR } from './config.js';
 
 /**
  * Normalize ship name for config output
@@ -200,4 +200,54 @@ export function assignToFiles(shipName, shellResults, shipClass, originalShipNam
   }
 
   return { heConfigs, apConfigs };
+}
+
+/**
+ * Generate sonar config XML for a submarine
+ * Uses single FireMode (linear relationship, no half/max range split needed)
+ * @param {string} shipName - Normalized ship name
+ * @param {number} bulletSpeed - Pre-calculated BulletSpeed (waveSpeed / 12.5)
+ * @param {number} rangeKm - Sonar range in kilometers
+ * @returns {string} Weapon config XML
+ */
+export function generateSonarConfig(shipName, bulletSpeed, rangeKm) {
+  const maxConv = calculateConvertedRange(rangeKm);
+
+  return `<Weapon ${shipName}>
+\t<FireMode>
+\t\t<HitLocations>
+\t\t\t<HitData>
+\t\t\t\t<HitZone 2></HitZone>
+\t\t\t\t<MinPlayerSpeed -1></MinPlayerSpeed>
+\t\t\t\t<MaxPlayerSpeed -1></MaxPlayerSpeed>
+\t\t\t\t<MinTargetSpeed -1></MinTargetSpeed>
+\t\t\t\t<MaxTargetSpeed -1></MaxTargetSpeed>
+\t\t\t\t<MinTargetHealth -1></MinTargetHealth>
+\t\t\t\t<MaxTargetHealth -1></MaxTargetHealth>
+\t\t\t\t<MinPlayerZoom -1></MinPlayerZoom>
+\t\t\t\t<MaxPlayerZoom -1></MaxPlayerZoom>
+\t\t\t\t<MinRange -1></MinRange>
+\t\t\t\t<MaxRange ${maxConv}></MaxRange>
+\t\t\t\t<MinAngle -1></MinAngle>
+\t\t\t\t<MaxAngle -1></MaxAngle>
+\t\t\t</HitData>
+\t\t</HitLocations>
+\t\t<Valid True></Valid>
+\t\t<CanHitPlayer True></CanHitPlayer>
+\t\t<CanHitVehicle True></CanHitVehicle>
+\t\t<CanHitArmor True></CanHitArmor>
+\t\t<CanHitPlane True></CanHitPlane>
+\t\t<CanHitHeli True></CanHitHeli>
+\t\t<CanHitBoat True></CanHitBoat>
+\t\t<BulletSpeed ${bulletSpeed.toFixed(2)}></BulletSpeed>
+\t\t<BulletDrop -1></BulletDrop>
+\t\t<MinZoomLevel -1></MinZoomLevel>
+\t\t<AutoZoom False></AutoZoom>
+\t\t<Trigger 0></Trigger>
+\t\t<BulletPlayerSpeedScale 0.0></BulletPlayerSpeedScale>
+\t\t<BulletTargetSpeedScale 1.0></BulletTargetSpeedScale>
+\t\t<PitchToAdd ${SONAR.pitch}></PitchToAdd>
+\t\t<YawToAdd 0></YawToAdd>
+\t</FireMode>
+</Weapon>`;
 }

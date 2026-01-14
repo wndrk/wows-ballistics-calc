@@ -70,8 +70,15 @@ export const URLS = {
     ap: '/params?p=ap',        // AP shell data
     he: '/params?p=he',        // HE shell data
     sap: '/params?p=sap',      // SAP shell data
-  }
+  },
+  sonar: '/params?g=TPt&ty=S&n=All&tn=6&p=son'  // Submarine sonar data
 };
 
-// Ship classes to skip
-export const SKIP_CLASSES = ['SS', 'CV'];
+// Ship classes to skip (SS now handled separately for sonar)
+export const SKIP_CLASSES = ['CV'];
+
+// Sonar constants for submarines
+export const SONAR = {
+  velocityDivisor: 12.5,  // BulletSpeed = waveSpeed / 12.5
+  pitch: 0                // No pitch adjustment for sonar pings
+};

@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer';
-import { URLS, SKIP_CLASSES } from './config.js';
+import { URLS, SKIP_CLASSES, SONAR } from './config.js';
 
 // Timing configuration (from working scraper)
 const TIMING = {
@@ -339,4 +339,61 @@ export function validateScrapedData(shipData) {
   }
 
   return issues;
+}
+
+/**
+ * Scrape submarine sonar data from shiptool.st
+ * @returns {Promise<Object>} Sonar data keyed by ship name
+ */
+export async function scrapeSonarData() {
+  console.log('Launching browser for sonar data...');
+  const browser = await puppeteer.launch({
+    headless: 'new',
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage'
+    ]
+  });
+
+  try {
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1920, height: 1080 });
+
+    // Scrape sonar params table
+    console.log('Scraping submarine sonar data...');
+    const sonarData = await scrapeTable(page, URLS.sonar);
+
+    // Debug: show sample
+    if (sonarData.length > 0) {
+      console.log('  Sonar table columns:', Object.keys(sonarData[0]));
+      console.log('  Sample sonar row:', JSON.stringify(sonarData[0]));
+    }
+
+    // Build sonar info lookup (name -> {class, nation, range, waveSpeed})
+    const sonarInfo = {};
+    for (const row of sonarData) {
+      const name = row.ship || row.name;
+      const shipClass = (row.class || '').toUpperCase();
+      const nation = row.nation || '';
+      const range = parseNumeric(row.range);
+      const waveSpeed = parseNumeric(row['wave speed']);
+
+      if (name && shipClass === 'SS' && waveSpeed > 0) {
+        sonarInfo[name] = {
+          class: shipClass,
+          nation,
+          range,
+          waveSpeed,
+          bulletSpeed: waveSpeed / SONAR.velocityDivisor
+        };
+      }
+    }
+
+    console.log(`  Found ${Object.keys(sonarInfo).length} submarines with sonar data`);
+    return sonarInfo;
+
+  } finally {
+    await browser.close();
+  }
 }

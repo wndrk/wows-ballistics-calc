@@ -1,8 +1,8 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { scrapeShipData, validateScrapedData } from './scraper.js';
+import { scrapeShipData, validateScrapedData, scrapeSonarData } from './scraper.js';
 import { getBallisticsAtRange, calculateModifiedRange } from './physics.js';
-import { calculateFactor, normalizeShipName, assignToFiles } from './utils.js';
+import { calculateFactor, normalizeShipName, assignToFiles, generateSonarConfig } from './utils.js';
 
 const CONFIGS_DIR = 'configs';
 
@@ -12,7 +12,7 @@ const CONFIGS_DIR = 'configs';
 async function main() {
   console.log('=== WoWS Ballistics Calculator ===\n');
 
-  // 1. Scrape ship data
+  // 1. Scrape ship data (surface ships and submarines)
   console.log('Phase 1: Scraping ship data from shiptool.st...\n');
   const shipData = await scrapeShipData();
 
@@ -23,6 +23,10 @@ async function main() {
     issues.forEach(issue => console.warn(`  - ${issue}`));
     console.warn('');
   }
+
+  // 1b. Scrape submarine sonar data
+  console.log('\nPhase 1b: Scraping submarine sonar data...\n');
+  const sonarData = await scrapeSonarData();
 
   // 2. Calculate ballistics for each ship
   console.log('\nPhase 2: Calculating ballistics...\n');
@@ -128,18 +132,48 @@ async function main() {
     apConfigs.push(...ap);
   }
 
+  // 3b. Generate submarine sonar configs (append to HE.cfg)
+  const sonarConfigs = [];
+  const sonarResults = {};
+
+  for (const [shipName, sonar] of Object.entries(sonarData)) {
+    const normalizedName = normalizeShipName(shipName);
+    const config = generateSonarConfig(normalizedName, sonar.bulletSpeed, sonar.range);
+    sonarConfigs.push(config);
+
+    // Add to sonar results for summary
+    sonarResults[shipName] = {
+      class: sonar.class,
+      nation: sonar.nation,
+      range: sonar.range,
+      waveSpeed: sonar.waveSpeed,
+      bulletSpeed: sonar.bulletSpeed
+    };
+
+    console.log(`  [SONAR] ${shipName}: waveSpeed=${sonar.waveSpeed} m/s, bulletSpeed=${sonar.bulletSpeed.toFixed(2)}`);
+  }
+
+  // Combine HE configs with sonar configs
+  const allHeConfigs = [...heConfigs, ...sonarConfigs];
+
   // Write config files
   const heFilePath = path.join(CONFIGS_DIR, 'HE.cfg');
   const apFilePath = path.join(CONFIGS_DIR, 'AP.cfg');
   const summaryFilePath = path.join(CONFIGS_DIR, '_summary.json');
 
-  await fs.writeFile(heFilePath, heConfigs.join('\n\n'), 'utf-8');
-  console.log(`  Written: ${heFilePath} (${heConfigs.length} weapons)`);
+  await fs.writeFile(heFilePath, allHeConfigs.join('\n\n'), 'utf-8');
+  console.log(`  Written: ${heFilePath} (${heConfigs.length} shell weapons + ${sonarConfigs.length} sonar weapons)`);
 
   await fs.writeFile(apFilePath, apConfigs.join('\n\n'), 'utf-8');
   console.log(`  Written: ${apFilePath} (${apConfigs.length} weapons)`);
 
-  await fs.writeFile(summaryFilePath, JSON.stringify(results, null, 2), 'utf-8');
+  // Include sonar data in summary
+  const fullSummary = {
+    ships: results,
+    submarines: sonarResults
+  };
+
+  await fs.writeFile(summaryFilePath, JSON.stringify(fullSummary, null, 2), 'utf-8');
   console.log(`  Written: ${summaryFilePath}`);
 
   console.log('\n=== Done! ===');
