@@ -130,6 +130,7 @@ Transforms ship names for config output:
   - Zorkiy → Zorky
   - Kremlin → Sovetskaya_Rossiya
   - Moskva → Pr_66_Moskva
+  - I-56 '44 → I56_1944
 - Diacritics removed, special chars replaced with underscores
 
 ## Output

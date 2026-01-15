@@ -63,7 +63,7 @@ export const SHIP_NAME_MAPPINGS = {
     // Submarine naming
     'I-56': 'I56',
     'U-4501': 'U4501',
-    "I-56 '44": 'I56_44',
+    "I-56 '44": 'I56_1944',
   },
 };
 
