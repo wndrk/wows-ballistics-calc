@@ -97,7 +97,9 @@ export function generateWeaponConfig(shipName, shellType, rangeData, shipClass, 
 
   const halfConv = calculateConvertedRange(rangeData.halfRange);
   const maxConv = calculateConvertedRange(rangeData.maxRange + 0.5); // 0.5km buffer
-  const upperPitch = (shellType === 'ap') ? 0 : pitch;
+  const upperPitch = (shellType === 'ap')
+    ? (shipClass === 'BB' ? PITCH.ap.BB_upper : 0)
+    : pitch;
 
   return `<Weapon ${shipName}>
 \t<FireMode>

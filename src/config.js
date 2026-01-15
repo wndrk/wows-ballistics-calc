@@ -25,7 +25,8 @@ export const MODIFIERS = {
 export const PITCH = {
   ap: {
     DD: 0,
-    BB: -0.014,
+    BB: -0.02,
+    BB_upper: -0.007, // Upper range pitch for BBs
     CA: -0.014,       // Heavy cruiser (caliber >= 203mm)
     CL: -0.011,       // Light cruiser (caliber < 203mm)
     default: -0.013
