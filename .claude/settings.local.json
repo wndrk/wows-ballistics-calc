@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm start)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial commit: WoWS Ballistics Calculator\n\nPhysics-based shell ballistics calculator for World of Warships.\nUses RK4 numerical integration to calculate flight times and impact angles\nfrom shell properties scraped from shiptool.st.\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(gh repo create:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(node -e:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd Artillery Plotting Room Mod 1 \\(+16% range\\) for USN BBs\n\n- Add nation tracking from shell data tables\n- Apply APRM1 multiplier \\(1.16\\) to U.S.A. battleships\n- Add Alexander Nevsky ship name mapping \\(Pr_84_Alexander_Nevsky\\)\n- Update pitch values and documentation to match actual config\n- Fix range modifier documentation \\(rangeBufferKm: 0.5\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:api.github.com)",
+      "Bash(git commit:*)",
+      "Bash(npm search:*)",
+      "Bash(npm view:*)",
+      "Bash(claude mcp remove:*)",
+      "Bash(claude mcp add:*)",
+      "Bash(docker:*)"
+    ]
+  }
+}

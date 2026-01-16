@@ -9,6 +9,8 @@
     "debug": "node --inspect src/index.js"
   },
   "dependencies": {
+    "@anthropic-ai/claude-code": "^2.1.7",
+    "@openai/codex": "^0.84.0",
     "puppeteer": "^23.0.0"
   }
 }
