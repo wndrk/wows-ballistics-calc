@@ -25,11 +25,11 @@ export const MODIFIERS = {
 export const PITCH = {
   ap: {
     DD: 0,
-    BB: -0.03,
-    BB_upper: -0.007, // Upper range pitch for BBs
-    CA: -0.014,       // Heavy cruiser (caliber >= 203mm)
-    CL: -0.011,       // Light cruiser (caliber < 203mm)
-    default: -0.013
+    BB: -0.033,
+    BB_upper: -0.0077, // Upper range pitch for BBs
+    CA: -0.0154,       // Heavy cruiser (caliber >= 203mm)
+    CL: -0.0121,       // Light cruiser (caliber < 203mm)
+    default: -0.0143
   },
   other: {  // HE/SAP
     DD: 0.03,
@@ -61,6 +61,7 @@ export const SHIP_NAME_MAPPINGS = {
     'Zorkiy': 'Zorky',
     'Kremlin': 'Sovetskaya_Rossiya',
     'Moskva': 'Pr_66_Moskva',
+    'Grosser Kurfürst': 'Grossdeutschland',
     // Submarine naming
     'I-56': 'I56',
     'U-4501': 'U4501',
@@ -78,7 +79,7 @@ export const URLS = {
     he: '/params?p=he',        // HE shell data
     sap: '/params?p=sap',      // SAP shell data
   },
-  sonar: '/params?g=TPt&ty=S&n=All&tn=6&p=son'  // Submarine sonar data
+  sonar: '/params?g=TPt&ty=S&n=All&tn=6&p=son',  // Submarine sonar data
 };
 
 // Ship classes to skip (SS now handled separately for sonar)
@@ -89,3 +90,4 @@ export const SONAR = {
   velocityDivisor: 12.5,  // BulletSpeed = waveSpeed / 12.5
   pitch: 0                // No pitch adjustment for sonar pings
 };
+
