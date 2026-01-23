@@ -33,7 +33,7 @@ export const PITCH = {
   },
   other: {  // HE/SAP
     DD: 0.03,
-    default: 0.04  // Used for all non-DD including BB
+    default: 0.036  // Used for all non-DD including BB
   },
   // Ship-specific overrides: { shipName: { shellType: pitchValue } }
   shipOverrides: {
